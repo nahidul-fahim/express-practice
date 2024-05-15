@@ -1,11 +1,16 @@
-import express from 'express';
-const app = express()
-const port = 3000
+import express, { Request, Response } from 'express';
+const app = express();
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
+// parsers
+app.use(express.json())
+
+app.get('/', (req: Request, res: Response) => {
+    res.send('Hello world! This is Nahid calling.')
 })
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+app.post("/", (req: Request, res: Response) => {
+    console.log(req.body);
+    res.send("Got the data")
 })
+
+export default app;
