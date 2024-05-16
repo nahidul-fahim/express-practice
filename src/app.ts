@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 const app = express();
 
 // parsers
@@ -24,6 +24,7 @@ userRouter.get("/create-user", (req: Request, res: Response) => {
     })
 })
 
+// 
 courseRouter.post("/create-course", (req: Request, res: Response) => {
     const data = req.body;
     console.log(data)
@@ -34,9 +35,36 @@ courseRouter.post("/create-course", (req: Request, res: Response) => {
 })
 
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello world! This is Nahid calling.')
+// middleware
+
+
+
+// Error handling - try - catch
+/*
+app.get('/', async (req: Request, res: Response) => {
+    try {
+        // res.send(something) // this is an error
+        res.send("something") // not an error
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({
+            success: false,
+            message: "Failed to get the message"
+        })
+    }
+}) */
+
+// error handling using global error handler
+app.get('/', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // res.send(something) // this is an error
+        res.send("something") // not an error
+    } catch (error) {
+        next(error)
+    }
 })
+
+
 
 // post request
 app.post("/", (req: Request, res: Response) => {
@@ -45,5 +73,28 @@ app.post("/", (req: Request, res: Response) => {
         message: "successfully got the data"
     })
 })
+
+
+// handling not found route
+app.all("*", (req: Request, res: Response) => {
+    res.status(400).json({
+        success: false,
+        message: "Route not found"
+    })
+})
+
+
+// global error handler
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+    if (error) {
+        console.log(error)
+        res.status(400).json({
+            success: false,
+            message: "Failed to get the message from global"
+        })
+    }
+})
+
+
 
 export default app;
